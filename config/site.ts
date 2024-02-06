@@ -4,10 +4,10 @@ export const siteConfig = {
 	name: "Fakiture App",
 	description: "Compose invoices with elaborate simplicity.",
 	navItems: [
-		{
-			label: "Compose",
-			href: "/compose",
-		},
+	{
+		label: "Compose",
+		href: "/compose",
+	},
     {
       label: "Docs",
       href: "/docs",
