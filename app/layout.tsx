@@ -45,7 +45,12 @@ export default function RootLayout({
 							{children}
 						</main>
 						<footer className="w-full flex items-center justify-center gap-2 py-3">
-							<Link className="gap-1 text-current">
+							<Link 
+								isExternal 
+								className="gap-1 text-current"
+								href="https://github.com/orgs/sam-squad/repositories"
+								title="sam-squad github repository"
+							>
 								<span className="text-default-600">Made by</span>
 								<p className="text-primary">sam-squad</p>
 							</Link>
