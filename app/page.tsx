@@ -13,7 +13,7 @@ export default function Home() {
 				<h1 className={title()}>Compose </h1>
 				<h1 className={title({ color: "green" })}>invoices </h1>
 				<h1 className={title()}>
-          with elaborate simplicity.
+          			with elaborate simplicity.
 				</h1>
 				<h2 className={subtitle({ class: "mt-4" })}>
           Fast and modern approach to managing your startup.
