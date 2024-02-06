@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Card, Input, Button } from '@nextui-org/react';
+import React, { useState } from "react";
+import { Card, Textarea, Button } from "@nextui-org/react";
 
 interface BillingInfo {
   billFrom: string;
@@ -10,69 +10,81 @@ interface CardWithBillingInfoProps {
   initialBillingInfo: BillingInfo;
 }
 
-const CardWithBillingInfo: React.FC<CardWithBillingInfoProps> = ({ initialBillingInfo }) => {
-  const [billingInfo, setBillingInfo] = useState<BillingInfo>(initialBillingInfo);
-  const [editMode, setEditMode] = useState<boolean>(false);
+const CardWithBillingInfo: React.FC<CardWithBillingInfoProps> = ({
+  initialBillingInfo,
+}) => {
+  const [billingInfo, setBillingInfo] = useState<BillingInfo>(
+    initialBillingInfo
+  );
   const [editModeBillFrom, setEditModeBillFrom] = useState<boolean>(false);
   const [editModeBillTo, setEditModeBillTo] = useState<boolean>(false);
 
-  const handleEdit = (field: 'billFrom' | 'billTo') => {
-    if (field === 'billFrom') {
-      setEditModeBillFrom(true);
-    } else if (field === 'billTo') {
-      setEditModeBillTo(true);
+  const handleToggleEditSave = (field: "billFrom" | "billTo") => {
+    if (field === "billFrom") {
+      setEditModeBillFrom((prev) => !prev);
+    } else if (field === "billTo") {
+      setEditModeBillTo((prev) => !prev);
     }
   };
 
   const handleSave = () => {
-    setEditMode(false);
     setEditModeBillFrom(false);
     setEditModeBillTo(false);
-    // Ici, vous pouvez ajouter la logique pour sauvegarder les informations de facturation
+    // Ajoutez ici la logique pour sauvegarder les informations de facturation
     // par exemple, en appelant une fonction de sauvegarde sur votre API
   };
 
   const handleChange = (field: keyof BillingInfo, value: string) => {
-    setBillingInfo(prevState => ({
+    setBillingInfo((prevState) => ({
       ...prevState,
-      [field]: value
+      [field]: value,
     }));
   };
 
   return (
     <Card>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: "20px",
+        }}
+      >
+        <div style={{ flexGrow: 1 }}>
           <h2>Bill From</h2>
-          <Input
+          <Textarea
             value={billingInfo.billFrom}
-            onChange={(e) => handleChange('billFrom', e.target.value)}
+            onChange={(e) => handleChange("billFrom", e.target.value)}
+            placeholder={editModeBillFrom ? "" : "Edit"}
+            style={{ width: "100%" }}
             disabled={!editModeBillFrom}
-            placeholder={editModeBillFrom ? '' : 'Edit'}
-            startContent={editModeBillFrom ? (
-              <Button  onClick={() => handleSave()}>Save</Button>
-            ) : null}
           />
+          <Button
+            onClick={() => handleToggleEditSave("billFrom")}
+            style={{ marginTop: "8px", marginRight: "8px" }}
+          >
+            {editModeBillFrom ? "Save" : "Edit"}
+          </Button>
         </div>
-        <div>
+        <div style={{ flexGrow: 1 }}>
           <h2>Bill To</h2>
-          <Input
+          <Textarea
             value={billingInfo.billTo}
-            onChange={(e) => handleChange('billTo', e.target.value)}
+            onChange={(e) => handleChange("billTo", e.target.value)}
+            placeholder={editModeBillTo ? "" : "Edit"}
+            style={{ width: "100%" }}
             disabled={!editModeBillTo}
-            placeholder={editModeBillTo ? '' : 'Edit'}
-            startContent={editModeBillTo ? (
-              <Button  onClick={() => handleSave()}>Save</Button>
-            ) : null}
           />
+          <Button
+            onClick={() => handleToggleEditSave("billTo")}
+            style={{ marginTop: "8px" }}
+          >
+            {editModeBillTo ? "Save" : "Edit"}
+          </Button>
         </div>
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button onClick={() => handleEdit('billFrom')}>Edit Bill From</Button>
-        <Button onClick={() => handleEdit('billTo')}>Edit Bill To</Button>
       </div>
     </Card>
   );
 };
 
-export { CardWithBillingInfo};
+export { CardWithBillingInfo };
