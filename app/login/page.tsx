@@ -35,7 +35,7 @@ export default function LoginPage() {
           type={isVisible ? "text" : "password"}
         />
         <Button color="primary" variant="shadow">
-          Let's go !
+          Let&#39;s go !
         </Button>
       </div>
     </div>
