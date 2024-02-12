@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.custom-form-container {
+    height: 500px; /* Par exemple, définissez la hauteur souhaitée */
+  }
+  
