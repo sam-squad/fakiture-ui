@@ -1,139 +1,87 @@
-"use client"
-import React, { useState } from 'react';
 import { title } from "@/components/primitives";
-import { Input } from "@nextui-org/react";
-import { CardWithBillingInfo } from "./BillInformation";
-import { ProductList } from './Product';
-import { Card, Textarea, Button } from '@nextui-org/react';
-import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem} from "@nextui-org/react";
+import { Button } from "@nextui-org/button";
+import { Input, Textarea } from "@nextui-org/input";
 
 export default function ComposePage() {
-  const initialBillingInfo = { billFrom: "", billTo: "" };
-
-  const [products, setProducts] = useState([
-    { description: '', quantity: '', rate: '', totalPrice: '' }
-  ]);
-
-  const addLine = () => {
-    setProducts([...products, { description: '', quantity: '', rate: '', totalPrice: '' }]);
-  };
-  
-  const handleChange = (index: number, field: string, value: string) => {
-    const updatedProducts = [...products];
-    updatedProducts[index] = {
-      ...updatedProducts[index],
-      [field]: value
-    };
-    setProducts(updatedProducts);
-  };
-  
   return (
-    <div style={{ margin: "20px", width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <div>
-        <h1 className={title()}>INVOICES</h1>
+    <main className="flex flex-col gap-8 items-center">
+      <div className="flex flex-col gap-2">
+        <h1 className={title()}>Make an invoices.</h1>
+        <h2>Start to compose the registration of </h2>
       </div>
-      <div style={{ width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
-        <div>
+      <div className="flex flex-col gap-2 w-[48rem]">
+        <Input
+          type="number"
+          variant="bordered"
+          label="Invoice number"
+          size="lg"
+          defaultValue="1"
+          startContent={
+            <div className="pointer-events-none flex items-center ps-0">
+              <span className="text-default-400">07022023/</span>
+            </div>
+          }
+        />
+        <div className="w-full flex flex-row gap-2">
           <Input
-            type="number"
-            label="Invoice Number"
-            placeholder="12B95AC"
-            labelPlacement="outside"
-			
+            variant="bordered"
+            size="lg"
+            placeholder="mm/dd/yyyy"
+            type="date"
+            label="Issue Date"
           />
-			<div style={{ width: "100%", display: "flex", flexDirection:"row" , marginTop:"20px"}}>
-				<Input
-					type="date"
-					label="Issue bill date"
-					placeholder="02/12/2004"
-					labelPlacement="outside"
-					className="mb-4"
-				/>
-				<Input
-					type="date"
-					label="Due Date"
-					placeholder="12/03/2024"
-					labelPlacement="outside"
-				/>
-			</div>
-       
-			<div>
-			<CardWithBillingInfo initialBillingInfo={initialBillingInfo} />
-			</div>
-		</div>
-      </div>
-      <div className="custom-form-container" style={{ width: "100%", marginTop: "20px" }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', width: "100%" }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '20px', width: '100%' }}>
-            <div><h3>Description</h3></div>
-            <div><h3>Quantity</h3></div>
-            <div><h3>Rate</h3></div>
-            <div><h3>Total Price</h3></div>
-            {products.map((product, index) => (
-              <React.Fragment key={index}>
-                <div>
-                  <Textarea
-                    value={product.description}
-                    onChange={(e) => handleChange(index, 'description', e.target.value)}
-                    placeholder="Enter description"
-                    style={{ width: "100%" }}
-                  />
-                </div>
-                <div>
-                  <Input
-                    value={product.quantity}
-                    onChange={(e) => handleChange(index, 'quantity', e.target.value)}
-                    placeholder="Quantity"
-                  />
-                </div>
-                <div>
-                  <Input
-                    value={product.rate}
-                    onChange={(e) => handleChange(index, 'rate', e.target.value)}
-                    placeholder="Rate"
-                  />
-                </div>
-                <div>
-                  <Input
-                    value={product.totalPrice}
-                    onChange={(e) => handleChange(index, 'totalPrice', e.target.value)}
-                    placeholder="Total Price"
-                  />
-                </div>
-              </React.Fragment>
-            ))}
+          <Input
+            variant="bordered"
+            size="lg"
+            placeholder="mm/dd/yyyy"
+            type="date"
+            label="Due Date"
+          />
+        </div>
+        <div className="w-full flex flex-row gap-2 ">
+          <div className="flex flex-col items-start w-full">
+            <Textarea
+              size="lg"
+              variant="bordered"
+              label="Bill from"
+              placeholder="Enter your contact details"
+              className="max-w-xs"
+            />
           </div>
-          <Button onClick={addLine} style={{ marginTop: '20px', width: "100%" }}>Add Line</Button>
-
-		<div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
-			<h2 style={{ marginRight: '20px' }}>Payment Method :</h2>
-			<Dropdown>
-				<DropdownTrigger>
-				<Button variant="bordered">
-					Select Payment
-				</Button>
-				</DropdownTrigger>
-				<DropdownMenu aria-label="Static Actions">
-				<DropdownItem key="new">Paypal</DropdownItem>
-				<DropdownItem key="copy">Especes</DropdownItem>
-				<DropdownItem key="edit">Mobile Money</DropdownItem>
-				</DropdownMenu>
-			</Dropdown>
-		</div>
-		<div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
-			<div style={{ marginRight: '20px' }}>
-				<h3>Subtotal:</h3>
-				<Input placeholder="Subtotal amount" />
-			</div>
-			<div>
-				<h3>Taxe:</h3>
-				<Input placeholder="Tax amount" />
-			</div>
-		</div>
-
-	</div>
-</div>
-	
- </div>
+          <div className="flex flex-col items-start w-full">
+            <Textarea
+              size="lg"
+              variant="bordered"
+              label="Bill To"
+              placeholder="Enter the client details"
+              className="max-w-xs"
+            />
+          </div>
+        </div>
+        <div className="flex flex-col gap-2 border-2 p-4 rounded-large">
+          <h3 className="text-left">Items</h3>
+          <div className="grid grid-cols-4 gap-2">
+            <Input
+              variant="bordered"
+              size="lg"
+              type="text"
+              label="Description"
+            />{" "}
+            <Input
+              variant="bordered"
+              size="lg"
+              type="number"
+              label="Quantity"
+            />{" "}
+            <Input variant="bordered" size="lg" type="number" label="Rate" />{" "}
+            <Input variant="bordered" size="lg" type="number" label="Total" />{" "}
+          </div>
+          <Button className="w-24 bg-foreground text-default">
+            {" "}
+            Add a line
+          </Button>
+        </div>
+      </div>
+    </main>
   );
 }
