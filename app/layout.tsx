@@ -41,17 +41,27 @@ export default function RootLayout({
 				<Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
 					<div className="relative flex flex-col h-screen">
 						<Navbar />
-						<main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
+						<main className="container mx-auto max-w-7xl pt-6 px-6 flex-grow">
 							{children}
 						</main>
-						<footer className="w-full flex items-center justify-center py-3">
+						<footer className="w-full flex items-center justify-center gap-2 py-3">
+							<Link 
+								isExternal 
+								className="gap-1 text-current"
+								href="https://github.com/orgs/sam-squad/repositories"
+								title="sam-squad github repository"
+							>
+								<span className="text-default-600">Made by</span>
+								<p className="text-primary">sam-squad</p>
+							</Link>
+							<span className="text-default-600">|</span>
 							<Link
 								isExternal
 								className="flex items-center gap-1 text-current"
 								href="https://nextui-docs-v2.vercel.app?utm_source=next-app-template"
 								title="nextui.org homepage"
 							>
-								<span className="text-default-600">Powered by</span>
+								<span className="text-default-600">powered by</span>
 								<p className="text-primary">NextUI</p>
 							</Link>
 						</footer>

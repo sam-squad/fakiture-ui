@@ -1,4 +1,4 @@
-export default function DocsLayout({
+export default function LoginLayout({
 	children,
 }: {
 	children: React.ReactNode;
