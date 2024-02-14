@@ -1,0 +1,20 @@
+name: CD
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  deploy:
+    name: Track Render Deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Track Render Deployment
+        uses: bounceapp/render-action@0.6.0
+        with:
+          render-token: ${{ secrets.RENDER_API }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          service-id: srv-cn3st0tjm4es73bmv7gg
+          retries: 20
+          wait: 16000
+          sleep: 30000
