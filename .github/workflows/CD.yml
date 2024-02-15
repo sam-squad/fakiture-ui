@@ -8,6 +8,9 @@ jobs:
   deploy:
     name: Track Render Deployment
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
     steps:
       - name: Track Render Deployment
         uses: bounceapp/render-action@0.6.0
