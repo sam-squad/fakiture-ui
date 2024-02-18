@@ -1,13 +1,32 @@
-import { title } from "@/components/primitives";
+"use client"
 import { Button } from "@nextui-org/button";
-import { Input, Textarea } from "@nextui-org/input";
+import React, { useState } from 'react';
+import { Input, Textarea } from '@nextui-org/input';
 
 export default function ComposePage() {
+  const [items, setItems] = useState([{ description: '', quantity: '', rate: '', total: '' }]);
+
+  const addLine = () => {
+    setItems(prevItems => [
+      ...prevItems,
+      { description: '', quantity: '', rate: '', total: '' }
+    ]);
+  };
+
+  const handleItemChange = (index, field, value) => {
+    const updatedItems = [...items];
+    updatedItems[index] = {
+      ...updatedItems[index],
+      [field]: value
+    };
+    setItems(updatedItems);
+  };
+
   return (
     <main className="flex flex-col gap-8 items-center">
-      <div className="flex flex-col gap-2">
-        <h1 className={title()}>Make an invoices.</h1>
-        <h2>Start to compose the registration of </h2>
+      <div className="flex flex-col gap-2"> 
+        <h1 className="text-4xl font-bold text-gray-900">Create an Invoice</h1>
+        <h2 className="text-lg font-medium text-gray-700">Start composing your registration</h2>
       </div>
       <div className="flex flex-col gap-2 w-[48rem]">
         <Input
@@ -60,24 +79,43 @@ export default function ComposePage() {
         </div>
         <div className="flex flex-col gap-2 border-2 p-4 rounded-large">
           <h3 className="text-left">Items</h3>
-          <div className="grid grid-cols-4 gap-2">
-            <Input
-              variant="bordered"
-              size="lg"
-              type="text"
-              label="Description"
-            />{" "}
-            <Input
-              variant="bordered"
-              size="lg"
-              type="number"
-              label="Quantity"
-            />{" "}
-            <Input variant="bordered" size="lg" type="number" label="Rate" />{" "}
-            <Input variant="bordered" size="lg" type="number" label="Total" />{" "}
-          </div>
-          <Button className="w-24 bg-foreground text-default">
-            {" "}
+          {items.map((item, index) => (
+            <div key={index} className="grid grid-cols-4 gap-2">
+              <Input
+                variant="bordered"
+                size="lg"
+                type="text"
+                label="Description"
+                value={item.description}
+                onChange={(e) => handleItemChange(index, 'description', e.target.value)}
+              />
+              <Input
+                variant="bordered"
+                size="lg"
+                type="number"
+                label="Quantity"
+                value={item.quantity}
+                onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
+              />
+              <Input
+                variant="bordered"
+                size="lg"
+                type="number"
+                label="Rate"
+                value={item.rate}
+                onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
+              />
+              <Input
+                variant="bordered"
+                size="lg"
+                type="number"
+                label="Total"
+                value={item.total}
+                onChange={(e) => handleItemChange(index, 'total', e.target.value)}
+              />
+            </div>
+          ))}
+          <Button className="w-24 bg-foreground text-default" onClick={addLine}>
             Add a line
           </Button>
         </div>
