@@ -1,12 +1,11 @@
 "use client"
-
 import { Button } from "@nextui-org/button";
 import React, { useState } from 'react';
-import {  Input, Textarea } from '@nextui-org/input';
+import { Input, Textarea } from '@nextui-org/input';
 import jsPDF from 'jspdf';
 
 export default function ComposePage() {
-  const [items, setItems] = useState([{ description: '', quantity: '', rate: '', total: '' }]);
+  const [items, setItems] = useState([{ description: '', quantity: '', rate: '', totalLine: '' }]);
   const [invoiceNumber, setInvoiceNumber] = useState('');
   const [issueDate, setIssueDate] = useState('');
   const [dueDate, setDueDate] = useState('');
@@ -16,7 +15,7 @@ export default function ComposePage() {
   const addLine = () => {
     setItems(prevItems => [
       ...prevItems,
-      { description: '', quantity: '', rate: '', total: '' }
+      { description: '', quantity: '', rate: '', totalLine: '' }
     ]);
   };
 
@@ -26,6 +25,11 @@ export default function ComposePage() {
       ...updatedItems[index],
       [field]: value
     };
+    if (field === 'quantity' || field === 'rate') {
+      const quantity = parseFloat(updatedItems[index].quantity);
+      const rate = parseFloat(updatedItems[index].rate);
+      updatedItems[index].totalLine = (quantity * rate).toFixed(2);
+    }
     setItems(updatedItems);
   };
 
@@ -52,9 +56,17 @@ export default function ComposePage() {
       doc.text(`Description: ${item.description}`, 20, y + 10);
       doc.text(`Quantity: ${item.quantity}`, 20, y + 20);
       doc.text(`Rate: ${item.rate}`, 20, y + 30);
-      doc.text(`Total: ${item.total}`, 20, y + 40);
+      doc.text(`Total: ${item.totalLine}`, 20, y + 40);
       y += 60;
     });
+
+    // Total Invoice
+    const totalInvoice = items.reduce((acc, item) => {
+      return acc + parseFloat(item.totalLine);
+    }, 0).toFixed(2);
+
+    // Display Total Invoice
+    doc.text(`Total Invoice: ${totalInvoice}`, 15, y);
 
     // Enregistrer le PDF
     doc.save("invoice.pdf");
@@ -150,8 +162,8 @@ export default function ComposePage() {
                 size="lg"
                 type="number"
                 label="Total"
-                value={item.total}
-                onChange={(e) => handleItemChange(index, 'total', e.target.value)}
+                value={item.totalLine}
+                onChange={(e) => handleItemChange(index, 'totalLine', e.target.value)}
               />
             </div>
           ))}
@@ -159,9 +171,9 @@ export default function ComposePage() {
             Add a line
           </Button>
         </div>
-          <Button className="w-24 bg-foreground text-default mx-auto my-4" onClick={generatePDF}>
-             Generate PDF
-          </Button>
+        <Button className="w-24 bg-foreground text-default mx-auto my-4" onClick={generatePDF}>
+          Generate PDF
+        </Button>
       </div>
     </main>
   );
