@@ -54,7 +54,7 @@ export default function ComposePage() {
     doc.setFont(fontFamily, 'bold');
     doc.setFontSize(fontSizeTitle);
     doc.setTextColor('#fff');
-    doc.text("INVOICE", 105, 25, null, null);
+    doc.text("INVOICE", 105, 25);
 
     // Invoice Information
     doc.setFont(fontFamily, 'normal');
@@ -70,7 +70,7 @@ export default function ComposePage() {
     // Calculate the X coordinate for centering the text
     const centerX = (210 - textWidth) / 2;
     // Display grand total
-    doc.text(`Grand Total: ${totalInvoices}`, centerX, 270, null, null);
+    doc.text(`Grand Total: ${totalInvoices}`, centerX, 270);
 
     // Invoice Content
     doc.text(`Billed To: ${billTo}`, 15, 100);
@@ -84,7 +84,7 @@ export default function ComposePage() {
     doc.roundedRect(10, 125, 190, 10, 3, 3, 'FD'); // Rounded rectangle with border radius
     doc.setTextColor('#fff');
     doc.setFontSize(fontSizeSubTitle);
-    doc.text("Invoice Details", 105, 130, null, null);
+    doc.text("Invoice Details", 105, 130);
 
     // Invoice Items
     doc.setFont(fontFamily, 'normal');
