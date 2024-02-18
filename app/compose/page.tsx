@@ -20,7 +20,7 @@ export default function ComposePage() {
     ]);
   };
 
-  const handleItemChange = (index, field, value) => {
+  const handleItemChange = (index: number, field: string, value: string) => {
     const updatedItems = [...items];
     updatedItems[index] = {
       ...updatedItems[index],
@@ -34,7 +34,7 @@ export default function ComposePage() {
 
     // Facture
     doc.setFontSize(16);
-    doc.text("Invoice", 105, 15, null, null,"center");
+    doc.text("Invoice", 105, 15);
     doc.setFontSize(12);
     doc.text(`Invoice Number: ${invoiceNumber}`, 15, 30);
     doc.text(`Issue Date: ${issueDate}`, 15, 45);
@@ -44,7 +44,7 @@ export default function ComposePage() {
 
     // Items
     doc.setFontSize(14);
-    doc.text("Items", 105, 110, null, null, "center");
+    doc.text("Items", 105, 110);
     doc.setFontSize(12);
     let y = 120;
     items.forEach((item, index) => {
