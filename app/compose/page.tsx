@@ -1,5 +1,4 @@
 "use client"
-
 import { Button } from "@nextui-org/button";
 import React, { useState } from 'react';
 import {  Input, Textarea } from '@nextui-org/input';
@@ -20,45 +19,97 @@ export default function ComposePage() {
     ]);
   };
 
-  const handleItemChange = (index, field, value) => {
+  const handleItemChange = (index: number, field: string, value: string) => {
     const updatedItems = [...items];
     updatedItems[index] = {
       ...updatedItems[index],
       [field]: value
     };
+    if (field === 'quantity' || field === 'rate') {
+      const quantity = parseFloat(updatedItems[index].quantity);
+      const rate = parseFloat(updatedItems[index].rate);
+      updatedItems[index].total = (quantity * rate).toFixed(2);
+    }
     setItems(updatedItems);
   };
 
   const generatePDF = () => {
     const doc = new jsPDF();
-
-    // Facture
-    doc.setFontSize(16);
-    doc.text("Invoice", 105, 15, null, null,"center");
-    doc.setFontSize(12);
-    doc.text(`Invoice Number: ${invoiceNumber}`, 15, 30);
-    doc.text(`Issue Date: ${issueDate}`, 15, 45);
-    doc.text(`Due Date: ${dueDate}`, 15, 60);
-    doc.text(`Bill From: ${billFrom}`, 15, 75);
-    doc.text(`Bill To: ${billTo}`, 15, 90);
-
-    // Items
-    doc.setFontSize(14);
-    doc.text("Items", 105, 110, null, null, "center");
-    doc.setFontSize(12);
-    let y = 120;
+  
+    // Colors
+    const primaryColor = '#8e7155'; // Neutral Brown
+    const secondaryColor = '#af9b89'; // Light Beige
+    const backgroundColor = '#f5f5f5'; // Beige Background
+    const textColor = '#333333'; // Black Text
+  
+    // Font Styles
+    const fontFamily = 'Helvetica';
+    const fontSizeTitle = 18;
+    const fontSizeSubTitle = 14;
+    const fontSizeText = 12;
+  
+    // Invoice Header
+    doc.setFillColor(primaryColor);
+    doc.rect(0, 0, 210, 40, 'F');
+    doc.setFont(fontFamily, 'bold');
+    doc.setFontSize(fontSizeTitle);
+    doc.setTextColor('#fff');
+    doc.text("INVOICE", 105, 25, null, null);
+  
+    // Invoice Information
+    doc.setFont(fontFamily, 'normal');
+    doc.setFontSize(fontSizeText);
+    doc.setTextColor(textColor);
+    doc.text(`Invoice Number: ${invoiceNumber}`, 15, 60);
+    doc.text(`Issue Date: ${issueDate}`, 15, 70);
+    doc.text(`Due Date: ${dueDate}`, 15, 80);
+  
+    // Invoice Content
+    doc.text(`Billed To: ${billTo}`, 15, 100);
+    doc.text(`Billed From: ${billFrom}`, 15, 110);
+  
+    // Invoice Details Section
+    doc.setFillColor(secondaryColor);
+    doc.setDrawColor(secondaryColor);
+    doc.setLineWidth(0.5);
+    doc.setLineHeightFactor(1.2);
+    doc.roundedRect(10, 125, 190, 10, 3, 3, 'FD'); // Rounded rectangle with border radius
+    doc.setTextColor('#fff');
+    doc.setFontSize(fontSizeSubTitle);
+    doc.text("Invoice Details", 105, 130, null , null);
+  
+    // Invoice Items
+    doc.setFont(fontFamily, 'normal');
+    doc.setTextColor(textColor);
+    let startY = 140;
     items.forEach((item, index) => {
-      doc.text(`Item ${index + 1}:`, 15, y);
-      doc.text(`Description: ${item.description}`, 20, y + 10);
-      doc.text(`Quantity: ${item.quantity}`, 20, y + 20);
-      doc.text(`Rate: ${item.rate}`, 20, y + 30);
-      doc.text(`Total: ${item.total}`, 20, y + 40);
-      y += 60;
+      const x = 15;
+      const y = startY + index * 10;
+      doc.text(`Description: ${item.description}`, x, y);
+      doc.text(`Quantity: ${item.quantity}`, x + 80, y);
+      doc.text(`Rate: ${item.rate}`, x + 120, y);
+      doc.text(`Total: ${item.total}`, x + 160, y);
+      doc.text(`Grand Total: ${grandTotal}`, 105, 270, null, null, "center");
     });
+  
+    // Download PDF Button
+    doc.setFillColor(primaryColor);
+    doc.rect(80, 250, 50, 15, 'F');
+    doc.setTextColor('#fff');
+    doc.setFontSize(fontSizeText);
 
-    // Enregistrer le PDF
+  
+   
+    // Save PDF
     doc.save("invoice.pdf");
   };
+
+  // Calculate grand total
+  const grandTotal = items.reduce((acc, item) => {
+    const total = !isNaN(parseFloat(item.quantity)) && !isNaN(parseFloat(item.rate)) ?
+      (parseFloat(item.quantity) * parseFloat(item.rate)) : 0;
+    return acc + total;
+  }, 0).toFixed(2);
 
   return (
     <main className="flex flex-col gap-8 items-center">
@@ -145,23 +196,22 @@ export default function ComposePage() {
                 value={item.rate}
                 onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
               />
-              <Input
-                variant="bordered"
-                size="lg"
-                type="number"
-                label="Total"
-                value={item.total}
-                onChange={(e) => handleItemChange(index, 'total', e.target.value)}
-              />
+              <span className="border border-gray-300 px-2 py-1 rounded-lg flex items-center justify-center h-full">
+                Total: {item.total}
+              </span>
             </div>
           ))}
+          {/* Display grand total */}
+          <div className="border-t border-gray-300 pt-2 mt-4">
+            <span className="font-bold">Grand Total:</span> {grandTotal}
+          </div>
           <Button className="w-24 bg-foreground text-default" onClick={addLine}>
             Add a line
           </Button>
         </div>
-          <Button className="w-24 bg-foreground text-default mx-auto my-4" onClick={generatePDF}>
-             Generate PDF
-          </Button>
+        <Button className="w-24 bg-foreground text-default mx-auto my-4" onClick={generatePDF}>
+          Generate PDF
+        </Button>
       </div>
     </main>
   );
