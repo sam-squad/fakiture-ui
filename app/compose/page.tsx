@@ -5,7 +5,7 @@ import { Input, Textarea } from '@nextui-org/input';
 import jsPDF from 'jspdf';
 
 export default function ComposePage() {
-  const [items, setItems] = useState([{ description: '', quantity: '', rate: '', totalLine: '' }]);
+  const [items, setItems] = useState([{ description: '', quantity: '', rate: '', total: '' }]);
   const [invoiceNumber, setInvoiceNumber] = useState('');
   const [issueDate, setIssueDate] = useState('');
   const [dueDate, setDueDate] = useState('');
@@ -15,7 +15,7 @@ export default function ComposePage() {
   const addLine = () => {
     setItems(prevItems => [
       ...prevItems,
-      { description: '', quantity: '', rate: '', totalLine: '' }
+      { description: '', quantity: '', rate: '', total: '' }
     ]);
   };
 
@@ -28,7 +28,7 @@ export default function ComposePage() {
     if (field === 'quantity' || field === 'rate') {
       const quantity = parseFloat(updatedItems[index].quantity);
       const rate = parseFloat(updatedItems[index].rate);
-      updatedItems[index].totalLine = (quantity * rate).toFixed(2);
+      updatedItems[index].total = (quantity * rate).toFixed(2);
     }
     setItems(updatedItems);
   };
@@ -36,41 +36,85 @@ export default function ComposePage() {
   const generatePDF = () => {
     const doc = new jsPDF();
 
-    // Facture
-    doc.setFontSize(16);
-    doc.text("Invoice", 105, 15);
-    doc.setFontSize(12);
-    doc.text(`Invoice Number: ${invoiceNumber}`, 15, 30);
-    doc.text(`Issue Date: ${issueDate}`, 15, 45);
-    doc.text(`Due Date: ${dueDate}`, 15, 60);
-    doc.text(`Bill From: ${billFrom}`, 15, 75);
-    doc.text(`Bill To: ${billTo}`, 15, 90);
+    // Colors
+    const primaryColor = '#8e7155'; // Neutral Brown
+    const secondaryColor = '#af9b89'; // Light Beige
+    const backgroundColor = '#f5f5f5'; // Beige Background
+    const textColor = '#333333'; // Black Text
 
-    // Items
-    doc.setFontSize(14);
-    doc.text("Items", 105, 110);
-    doc.setFontSize(12);
-    let y = 120;
+    // Font Styles
+    const fontFamily = 'Helvetica';
+    const fontSizeTitle = 18;
+    const fontSizeSubTitle = 14;
+    const fontSizeText = 12;
+
+    // Invoice Header
+    doc.setFillColor(primaryColor);
+    doc.rect(0, 0, 210, 40, 'F');
+    doc.setFont(fontFamily, 'bold');
+    doc.setFontSize(fontSizeTitle);
+    doc.setTextColor('#fff');
+    doc.text("INVOICE", 105, 25, null, null);
+
+    // Invoice Information
+    doc.setFont(fontFamily, 'normal');
+    doc.setFontSize(fontSizeText);
+    doc.setTextColor(textColor);
+    doc.text(`Invoice Number: ${invoiceNumber}`, 15, 60);
+    doc.text(`Issue Date: ${issueDate}`, 15, 70);
+    doc.text(`Due Date: ${dueDate}`, 15, 80);
+
+    // Center the Invoice number try
+    // Calculate the width of the text
+    const textWidth = doc.getTextWidth(`Grand Total: ${totalInvoices}`);
+    // Calculate the X coordinate for centering the text
+    const centerX = (210 - textWidth) / 2;
+    // Display grand total
+    doc.text(`Grand Total: ${totalInvoices}`, centerX, 270, null, null);
+
+    // Invoice Content
+    doc.text(`Billed To: ${billTo}`, 15, 100);
+    doc.text(`Billed From: ${billFrom}`, 15, 110);
+
+    // Invoice Details Section
+    doc.setFillColor(secondaryColor);
+    doc.setDrawColor(secondaryColor);
+    doc.setLineWidth(0.5);
+    doc.setLineHeightFactor(1.2);
+    doc.roundedRect(10, 125, 190, 10, 3, 3, 'FD'); // Rounded rectangle with border radius
+    doc.setTextColor('#fff');
+    doc.setFontSize(fontSizeSubTitle);
+    doc.text("Invoice Details", 105, 130, null, null);
+
+    // Invoice Items
+    doc.setFont(fontFamily, 'normal');
+    doc.setTextColor(textColor);
+    let startY = 140;
     items.forEach((item, index) => {
-      doc.text(`Item ${index + 1}:`, 15, y);
-      doc.text(`Description: ${item.description}`, 20, y + 10);
-      doc.text(`Quantity: ${item.quantity}`, 20, y + 20);
-      doc.text(`Rate: ${item.rate}`, 20, y + 30);
-      doc.text(`Total: ${item.totalLine}`, 20, y + 40);
-      y += 60;
+      const x = 15;
+      const y = startY + index * 10;
+      doc.text(`Description: ${item.description}`, x, y);
+      doc.text(`Quantity: ${item.quantity}`, x + 80, y);
+      doc.text(`Rate: ${item.rate}`, x + 120, y);
+      doc.text(`Total: ${item.total}`, x + 160, y);
     });
 
-    // Total Invoice
-    const totalInvoice = items.reduce((acc, item) => {
-      return acc + parseFloat(item.totalLine);
-    }, 0).toFixed(2);
+    // Download PDF Button
+    doc.setFillColor(primaryColor);
+    doc.rect(80, 250, 50, 15, 'F');
+    doc.setTextColor('#fff');
+    doc.setFontSize(fontSizeText);
 
-    // Display Total Invoice
-    doc.text(`Total Invoice: ${totalInvoice}`, 15, y);
-
-    // Enregistrer le PDF
+    // Save PDF
     doc.save("invoice.pdf");
   };
+
+  // Calculate totalInvoices
+  const totalInvoices = items.reduce((acc, item) => {
+    const totalLine = !isNaN(parseFloat(item.quantity)) && !isNaN(parseFloat(item.rate)) ?
+      (parseFloat(item.quantity) * parseFloat(item.rate)) : 0;
+    return acc + totalLine;
+  }, 0).toFixed(2);
 
   return (
     <main className="flex flex-col gap-8 items-center">
@@ -157,16 +201,15 @@ export default function ComposePage() {
                 value={item.rate}
                 onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
               />
-              <Input
-                variant="bordered"
-                size="lg"
-                type="number"
-                label="Total"
-                value={item.totalLine}
-                onChange={(e) => handleItemChange(index, 'totalLine', e.target.value)}
-              />
+              <span className="border border-gray-300 px-2 py-1 rounded-lg flex items-center justify-center h-full">
+                Total: {item.total}
+              </span>
             </div>
           ))}
+          {/* Display totalInvoices */}
+          <div className="border-t border-gray-300 pt-2 mt-4">
+            <span className="font-bold">Total Invoices:</span> {totalInvoices}
+          </div>
           <Button className="w-24 bg-foreground text-default" onClick={addLine}>
             Add a line
           </Button>
