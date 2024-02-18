@@ -1,7 +1,9 @@
 "use client"
+
 import { Button } from "@nextui-org/button";
 import React, { useState } from 'react';
 import { Input, Textarea } from '@nextui-org/input';
+import jsPDF from 'jspdf';
 
 export default function ComposePage() {
   const [items, setItems] = useState([{ description: '', quantity: '', rate: '', total: '' }]);
@@ -20,6 +22,21 @@ export default function ComposePage() {
       [field]: value
     };
     setItems(updatedItems);
+  };
+
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    let y = 10;
+
+    doc.text("Invoice", 10, y);
+    y += 10;
+
+    items.forEach((item, index) => {
+      y += 10;
+      doc.text(`Item ${index + 1}: ${item.description}, Quantity: ${item.quantity}, Rate: ${item.rate}, Total: ${item.total}`, 10, y);
+    });
+
+    doc.save("invoice.pdf");
   };
 
   return (
@@ -81,10 +98,9 @@ export default function ComposePage() {
           <h3 className="text-left">Items</h3>
           {items.map((item, index) => (
             <div key={index} className="grid grid-cols-4 gap-2">
-              <Input
+              <Textarea
                 variant="bordered"
                 size="lg"
-                type="text"
                 label="Description"
                 value={item.description}
                 onChange={(e) => handleItemChange(index, 'description', e.target.value)}
@@ -117,6 +133,9 @@ export default function ComposePage() {
           ))}
           <Button className="w-24 bg-foreground text-default" onClick={addLine}>
             Add a line
+          </Button>
+          <Button className="w-24 bg-foreground text-default" onClick={generatePDF}>
+            Generate PDF
           </Button>
         </div>
       </div>
